@@ -6,7 +6,6 @@ Chromosome = List[bool]
 
 GENERATION_LIMIT = 15
 
-
 # Função para realizar a seleção por roleta
 def roulette_wheel_selection(population: List[Chromosome], fitnesses: List[Dict[str, int]]) -> Chromosome:
     total_fitness = sum(f['fitness'] for f in fitnesses)
@@ -47,6 +46,11 @@ def calculate_fitness(chromosome: Chromosome, capacity: int, items: List[Item]) 
 
     return {'fitness': total_value, 'weight': total_weight}
 
+GENERATION_LIMIT = 5
+CONVERGENCE_RATE = 0.9
+CROSSOVER_RATE = 0.85
+MUTATION_RATE = 0.1
+ELITISM = False
 
 if __name__ == "__main__":
     items: List[Item] = [(360, 7), (83, 0), (59, 30), (130, 22), (431, 80),
@@ -63,6 +67,9 @@ if __name__ == "__main__":
     capacity = 850
     size = 10
     generation = 0
+    parent1: Chromosome = []
+    parent2: Chromosome = []
+    threshold = size * CONVERGENCE_RATE
 
     best_fitness = 0
     best_chromosome = None
@@ -72,7 +79,11 @@ if __name__ == "__main__":
         print("Generation: ", generation)
 
         # Generate population
-        population = [[random.choice([True, False]) for _ in range(quantity)] for _ in range(size)]
+        population: List[Chromosome] = []
+
+        if generation == 0:
+            population = [[random.choice([True, False]) for _ in range(quantity)] for _ in range(size)]
+
         print("Population: ", population)
         mutation_rate = 0.001
         crossover_rate = 0.85
