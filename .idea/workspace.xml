@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9044c373-1c21-4adb-84ae-4cae1bd5d339" name="Changes" comment="feat: add generate population function">
-      <change beforePath="$PROJECT_DIR$/.idea/knapsack.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/knapsack.iml" afterDir="false" />
+    <list default="true" id="9044c373-1c21-4adb-84ae-4cae1bd5d339" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -106,7 +105,15 @@
       <option name="project" value="LOCAL" />
       <updated>1717768925025</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="feat: generating population and calculating fitness">
+      <option name="closed" value="true" />
+      <created>1717882831197</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1717882831197</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -114,9 +121,10 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: add generate population function" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: add generate population function" />
+    <MESSAGE value="feat: generating population and calculating fitness" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: generating population and calculating fitness" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/knapsack$main.coverage" NAME="main Coverage Results" MODIFIED="1717882579732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knapsack$main.coverage" NAME="main Coverage Results" MODIFIED="1717886844662" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
