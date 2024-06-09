@@ -19,6 +19,26 @@ def roulette_wheel_selection(population: List[Chromosome], fitnesses: List[Dict[
 
     return population[-1]
 
+# Função de seleção por grupo
+def GroupSelection(population: List[Chromosome], fitnesses: List[Dict[str, int]]) -> Chromosome:
+    # Ordena os índices dos cromossomos pela aptidão em ordem decrescente
+    orderedIndexes = sorted(range(len(fitnesses)), key=lambda i: fitnesses[i]['fitness'], reverse=True)
+
+    # Divide os índices em quatro grupos
+    groups = [orderedIndexes[:len(orderedIndexes) // 4],
+              orderedIndexes[len(orderedIndexes) // 4:len(orderedIndexes) // 2],
+              orderedIndexes[len(orderedIndexes) // 2:3 * len(orderedIndexes) // 4],
+              orderedIndexes[3 * len(orderedIndexes) // 4:]]
+
+    # Probabilidades para cada grupo
+    probabilities = [0.50, 0.30, 0.15, 0.05]
+
+    # Seleção de um índice baseado nas probabilidades dos grupos
+    selectedGroups = random.choices(range(4), probabilities)[0]
+    selectedIndexes = random.choice(groups[selectedGroups])
+
+    return population[selectedIndexes]
+
 
 # Função para realizar o crossover
 def crossover(parent1: Chromosome, parent2: Chromosome) -> Tuple[Chromosome, Chromosome]:
