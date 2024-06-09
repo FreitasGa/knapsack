@@ -1,157 +1,203 @@
 import random
-from typing import List, Tuple, Dict
+from typing import List, Tuple
 
 Item = Tuple[int, int]
 Chromosome = List[bool]
 
-GENERATION_LIMIT = 15
+GENERATION_LIMIT = 1000
 
-# Função para realizar a seleção por roleta
-def roulette_wheel_selection(population: List[Chromosome], fitnesses: List[Dict[str, int]]) -> Chromosome:
-    total_fitness = sum(f['fitness'] for f in fitnesses)
-    random_fitness = random.uniform(0, total_fitness)
-    partial_sum = 0
-
-    for i in range(len(population)):
-        partial_sum += fitnesses[i]['fitness']
-        if partial_sum >= random_fitness:
-            return population[i]
-
-    return population[-1]
-
-# Função de seleção por grupo
-def GroupSelection(population: List[Chromosome], fitnesses: List[Dict[str, int]]) -> Chromosome:
-    # Ordena os índices dos cromossomos pela aptidão em ordem decrescente
-    orderedIndexes = sorted(range(len(fitnesses)), key=lambda i: fitnesses[i]['fitness'], reverse=True)
-
-    # Divide os índices em quatro grupos
-    groups = [orderedIndexes[:len(orderedIndexes) // 4],
-              orderedIndexes[len(orderedIndexes) // 4:len(orderedIndexes) // 2],
-              orderedIndexes[len(orderedIndexes) // 2:3 * len(orderedIndexes) // 4],
-              orderedIndexes[3 * len(orderedIndexes) // 4:]]
-
-    # Probabilidades para cada grupo
-    probabilities = [0.50, 0.30, 0.15, 0.05]
-
-    # Seleção de um índice baseado nas probabilidades dos grupos
-    selectedGroups = random.choices(range(4), probabilities)[0]
-    selectedIndexes = random.choice(groups[selectedGroups])
-
-    return population[selectedIndexes]
-
-
-# Função para realizar o crossover
-def crossover(parent1: Chromosome, parent2: Chromosome) -> Tuple[Chromosome, Chromosome]:
-    crossover_point = random.randint(0, len(parent1) - 1)
-    child1 = parent1[:crossover_point] + parent2[crossover_point:]
-    child2 = parent2[:crossover_point] + parent1[crossover_point:]
-    return child1, child2
-
-
-# Função para realizar a mutação
-def mutate(chromosome: Chromosome, mutation_rate: float) -> Chromosome:
-    for i in range(len(chromosome)):
-        if random.random() < mutation_rate:
-            chromosome[i] = not chromosome[i]
-    return chromosome
-
-
-# Função para calcular o fitness de um cromossomo
-def calculate_fitness(chromosome: Chromosome, capacity: int, items: List[Item]) -> Dict[str, int]:
-    total_weight = sum(items[i][1] for i in range(len(chromosome)) if chromosome[i])
-    total_value = sum(items[i][0] for i in range(len(chromosome)) if chromosome[i])
-
-    if total_weight > capacity:
-        total_value = 0
-
-    return {'fitness': total_value, 'weight': total_weight}
-
-GENERATION_LIMIT = 5
 CONVERGENCE_RATE = 0.9
 CROSSOVER_RATE = 0.85
-MUTATION_RATE = 0.1
+MUTATION_RATE = 0.001
+
 ELITISM = False
 
+# Selection methods (0: Roulette Wheel Selection, 1: Group Selection)
+SELECTION_METHOD = 0
+
 if __name__ == "__main__":
-    items: List[Item] = [(360, 7), (83, 0), (59, 30), (130, 22), (431, 80),
-                         (67, 94), (230, 11), (52, 81), (93, 70), (125, 64),
-                         (670, 59), (892, 18), (600, 0), (38, 36), (48, 3),
-                         (147, 8), (78, 15), (256, 42), (63, 9), (17, 0),
-                         (120, 42), (164, 47), (432, 52), (35, 32), (92, 26),
-                         (110, 48), (22, 55), (42, 6), (50, 29), (323, 84),
-                         (514, 2), (28, 4), (87, 18), (73, 56), (78, 7),
-                         (15, 29), (26, 93), (78, 44), (210, 71), (36, 3),
-                         (85, 86), (189, 66), (274, 31), (43, 65), (33, 0),
-                         (10, 79), (19, 20), (389, 65), (276, 52), (312, 13)]
+    items: List[Item] = [(135, 70), (139, 73), (149, 77), (150, 80), (156, 82), (163, 87), (173, 90), (184, 94),
+                         (192, 98), (201, 106), (210, 110), (214, 113), (221, 115), (229, 118), (240, 120)]
     quantity = len(items)
-    capacity = 850
-    size = 10
+    capacity = 750
+    size = 100
+
     generation = 0
+    population: List[Chromosome] = []
     parent1: Chromosome = []
     parent2: Chromosome = []
-    threshold = size * CONVERGENCE_RATE
 
+    best_chromosome: Chromosome = []
     best_fitness = 0
-    best_chromosome = None
-    best_items = []
 
     while generation < GENERATION_LIMIT:
-        print("Generation: ", generation)
+        # print("Generation: ", generation)
 
-        # Generate population
-        population: List[Chromosome] = []
-
+        # Generate initial population
         if generation == 0:
             population = [[random.choice([True, False]) for _ in range(quantity)] for _ in range(size)]
 
-        print("Population: ", population)
-        mutation_rate = 0.001
-        crossover_rate = 0.85
+        # print("Population: ", population)
 
         # Calculate fitness
-        fitnesses = [calculate_fitness(chromosome, capacity, items) for chromosome in population]
+        fitness = []
 
-        # Verifica a condição de parada: 90% da população com o mesmo fitness
-        unique_fitnesses = set(f['fitness'] for f in fitnesses)
-        if len(unique_fitnesses) <= 0.1 * size:
-            print('90% da população possui o mesmo fitnesses')
+        for chromosome in population:
+            fit = 0
+            value = sum([items[index][0] for (index, present) in enumerate(chromosome) if present])
+            weight = sum([items[index][1] for (index, present) in enumerate(chromosome) if present])
+
+            # Remove items until weight is less than capacity
+            while weight > capacity:
+                index = random.randint(0, quantity - 1)
+
+                if chromosome[index]:
+                    chromosome[index] = False
+                    value -= items[index][0]
+                    weight -= items[index][1]
+
+            if weight <= capacity:
+                fit = value
+
+            fitness.append(fit)
+
+        fitness_sum = sum(fitness)
+
+        # print("Population After Fitness: ", population)
+        # print("Fitness: ", fitness)
+        # print("Fitness Sum: ", fitness_sum)
+
+        # Check if the population has converged (90%)
+        unique_fitness = set(fitness)
+        threshold = round(1 - CONVERGENCE_RATE, 2) * size
+
+        if len(unique_fitness) <= threshold:
+            print("Population has converged!")
+
+            fittest = max(fitness)
+
+            if fittest > best_fitness:
+                index = fitness.index(fittest)
+                best_chromosome = population[index]
+                best_fitness = fitness[index]
+
             break
 
+        # Create new population
         new_population = []
 
-        while len(new_population) < size:
-            parent1 = roulette_wheel_selection(population, fitnesses)
-            parent2 = roulette_wheel_selection(population, fitnesses)
+        # If elitism is enabled, keep 2 of the fittest chromosomes
+        if ELITISM:
+            sorted_fitness = sorted(fitness, reverse=True)
+
+            for i in range(2):
+                index = fitness.index(sorted_fitness[i])
+                new_population.append(population[index])
+
+            # print("New Population After Elitism: ", new_population)
+
+        while True:
+            if SELECTION_METHOD == 1:
+                # Select parents by Group Selection
+                indexes = list(range(size))
+                indexes.sort(key=lambda x: fitness[x], reverse=True)
+
+                groups = [
+                    indexes[:size // 4],
+                    indexes[size // 4: size // 2],
+                    indexes[size // 2: 3 * size // 4],
+                    indexes[3 * size // 4:]
+                ]
+
+                for i in range(2):
+                    rand = random.random()
+
+                    if rand >= 0.50:
+                        group = groups[0]
+                    elif 0.50 > rand >= 0.30:
+                        group = groups[1]
+                    elif 0.30 > rand >= 0.15:
+                        group = groups[2]
+                    else:
+                        group = groups[3]
+
+                    if i == 0:
+                        parent1 = population[random.choice(group)]
+                    else:
+                        parent2 = population[random.choice(group)]
+            else:
+                # Select parents by Roulette Wheel Selection
+                for i in range(2):
+                    limit = random.randint(0, fitness_sum)
+                    partial_sum = 0
+
+                    for index, fit in enumerate(fitness):
+                        partial_sum += fit
+
+                        if partial_sum >= limit:
+                            if i == 0:
+                                parent1 = population[index]
+                            else:
+                                parent2 = population[index]
+
+                            break
+
+            # print("Parent 1: ", parent1)
+            # print("Parent 2: ", parent2)
 
             child1, child2 = parent1, parent2
 
-            if random.random() < crossover_rate:
-                child1, child2 = crossover(parent1, parent2)
+            # print("Child 1: ", child1)
+            # print("Child 2: ", child2)
 
-            child1 = mutate(child1, mutation_rate)
-            child2 = mutate(child2, mutation_rate)
+            # Crossover
+            if random.random() < CROSSOVER_RATE:
+                point = random.randint(0, quantity - 1)
+
+                child1 = parent1[:point] + parent2[point:]
+                child2 = parent2[:point] + parent1[point:]
+
+            # print("Child 1 After Crossover: ", child1)
+            # print("Child 2 After Crossover: ", child2)
+
+            # Mutation
+            for i in range(quantity):
+                if random.random() < MUTATION_RATE:
+                    child1[i] = not child1[i]
+
+                if random.random() < MUTATION_RATE:
+                    child2[i] = not child2[i]
+
+            # print("Child 1 After Mutation: ", child1)
+            # print("Child 2 After Mutation: ", child2)
 
             new_population.append(child1)
+            new_population.append(child2)
 
-            if len(new_population) < size:
-                new_population.append(child2)
+            if len(new_population) >= size:
+                break
 
         population = new_population
 
-        # Atualizar o melhor cromossomo encontrado
-        for i, fitness in enumerate(fitnesses):
-            if fitness['fitness'] > best_fitness:
-                best_fitness = fitness['fitness']
-                best_chromosome = population[i]
+        # Find the fittest chromosome
+        fittest = max(fitness)
+
+        if fittest > best_fitness:
+            index = fitness.index(fittest)
+            best_chromosome = population[index]
+            best_fitness = fitness[index]
 
         generation += 1
 
-    # Obtém os itens na mochila do melhor cromossomo
-    if best_chromosome:
-        best_items = [items[i] for i in range(len(best_chromosome)) if best_chromosome[i]]
+    best_items = [items[index] for (index, present) in enumerate(best_chromosome) if present]
 
-    print("Melhor fitness: ", best_fitness)
-    print("Melhor cromossomo: ", best_chromosome)
-    print("Itens na mochila: ", best_items)
-    print("Final Population: ", population)
-    print("Fitnesses: ", fitnesses)
+    print("Crossover Rate: ", CROSSOVER_RATE)
+    print("Mutation Rate: ", MUTATION_RATE)
+    print("Elitism: ", ELITISM)
+    print("Population Size: ", size)
+    print("Selection Method: ", SELECTION_METHOD == 1 and "Group" or "Roulette Wheel")
+    print("Generation: ", generation)
+    print("Population: ", population)
+    print("Best Chromosome: ", best_chromosome)
+    print("Best Fitness: ", best_fitness)
+    print("Best Items: ", best_items)
