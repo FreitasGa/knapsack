@@ -1,10 +1,11 @@
 import random
+import time
 from typing import List, Tuple
 
 Item = Tuple[int, int]
 Chromosome = List[bool]
 
-GENERATION_LIMIT = 1000
+GENERATION_LIMIT = 500
 
 CONVERGENCE_RATE = 0.9
 CROSSOVER_RATE = 0.85
@@ -24,11 +25,12 @@ if __name__ == "__main__":
 
     generation = 0
     population: List[Chromosome] = []
-    parent1: Chromosome = []
-    parent2: Chromosome = []
 
     best_chromosome: Chromosome = []
     best_fitness = 0
+
+    # Performance timer
+    start = time.perf_counter()
 
     while generation < GENERATION_LIMIT:
         # print("Generation: ", generation)
@@ -47,7 +49,7 @@ if __name__ == "__main__":
             value = sum([items[index][0] for (index, present) in enumerate(chromosome) if present])
             weight = sum([items[index][1] for (index, present) in enumerate(chromosome) if present])
 
-            # Remove items until weight is less than capacity
+            # Randomly remove items until weight is less than capacity
             while weight > capacity:
                 index = random.randint(0, quantity - 1)
 
@@ -80,6 +82,7 @@ if __name__ == "__main__":
                 index = fitness.index(fittest)
                 best_chromosome = population[index]
                 best_fitness = fitness[index]
+                best_items = [items[index] for (index, present) in enumerate(best_chromosome) if present]
 
             break
 
@@ -97,6 +100,8 @@ if __name__ == "__main__":
             # print("New Population After Elitism: ", new_population)
 
         while True:
+            parent1, parent2 = [], []
+
             if SELECTION_METHOD == 1:
                 # Select parents by Group Selection
                 indexes = list(range(size))
@@ -177,8 +182,6 @@ if __name__ == "__main__":
             if len(new_population) >= size:
                 break
 
-        population = new_population
-
         # Find the fittest chromosome
         fittest = max(fitness)
 
@@ -186,18 +189,21 @@ if __name__ == "__main__":
             index = fitness.index(fittest)
             best_chromosome = population[index]
             best_fitness = fitness[index]
+            best_items = [items[index] for (index, present) in enumerate(best_chromosome) if present]
 
+        population = new_population
         generation += 1
 
-    best_items = [items[index] for (index, present) in enumerate(best_chromosome) if present]
-
-    print("Crossover Rate: ", CROSSOVER_RATE)
-    print("Mutation Rate: ", MUTATION_RATE)
-    print("Elitism: ", ELITISM)
-    print("Population Size: ", size)
-    print("Selection Method: ", SELECTION_METHOD == 1 and "Group" or "Roulette Wheel")
+    # print("Crossover Rate: ", CROSSOVER_RATE)
+    # print("Mutation Rate: ", MUTATION_RATE)
+    # print("Elitism: ", ELITISM)
+    # print("Population Size: ", size)
+    # print("Selection Method: ", SELECTION_METHOD == 1 and "Group" or "Roulette Wheel")
     print("Generation: ", generation)
-    print("Population: ", population)
+    # print("Population: ", population)
     print("Best Chromosome: ", best_chromosome)
     print("Best Fitness: ", best_fitness)
     print("Best Items: ", best_items)
+    print("Best Items: ", [items.index(item) + 1 for item in best_items])
+
+    print("Time: ", time.perf_counter() - start, "s")

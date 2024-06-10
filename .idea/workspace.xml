@@ -124,9 +124,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat: add generate population function" />
     <MESSAGE value="feat: generating population and calculating fitness" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: generating population and calculating fitness" />
+    <option name="LAST_COMMIT_MESSAGE" value="" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/knapsack$main.coverage" NAME="main Coverage Results" MODIFIED="1717895931299" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/knapsack$main.coverage" NAME="main Coverage Results" MODIFIED="1717985995559" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
